@@ -560,7 +560,7 @@ def write_profile_results() -> None:
 
 
 def run() -> None:
-    print(f"Starting Anki {_version}...")
+    print(f"Starting AnkiForkbyYuusei {_version}...")
     try:
         _run()
     except Exception:
@@ -666,7 +666,7 @@ def _run(argv: list[str] | None = None, exec: bool = True) -> AnkiApp | None:
         os.environ["QT_QPA_PLATFORM"] = "windows:altgr"
 
     # create the app
-    QCoreApplication.setApplicationName("Anki")
+    QCoreApplication.setApplicationName("AnkiForkbyYuusei")
     QGuiApplication.setDesktopFileName("anki")
     app = AnkiApp(argv)
     if app.secondInstance():
