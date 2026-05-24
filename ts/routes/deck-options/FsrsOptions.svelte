@@ -462,7 +462,10 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 </DynamicallySlottable>
 
 <Warning warning={optimizationEpochsChangeInfo} className={"alert-info two-line"} />
-<Warning warning={optimizationEpochsWarning} className={optimizationEpochsWarningClass} />
+<Warning
+    warning={optimizationEpochsWarning}
+    className={optimizationEpochsWarningClass}
+/>
 
 <div class="ms-1 me-1">
     <ParamsInputRow

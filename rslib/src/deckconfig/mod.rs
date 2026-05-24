@@ -22,10 +22,11 @@ pub use update::UpdateDeckConfigsRequest;
 /// Old deck config and cards table store 250% as 2500.
 pub(crate) const INITIAL_EASE_FACTOR_THOUSANDS: u16 = (INITIAL_EASE_FACTOR * 1000.0) as u16;
 
+use fsrs::DEFAULT_OPTIMIZATION_EPOCHS;
+
 use crate::define_newtype;
 use crate::prelude::*;
 use crate::scheduler::states::review::INITIAL_EASE_FACTOR;
-use fsrs::DEFAULT_OPTIMIZATION_EPOCHS;
 
 define_newtype!(DeckConfigId, i64);
 
