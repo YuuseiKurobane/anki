@@ -34,7 +34,8 @@ rev = "184b2ca50ed39ca43da13f0b830a463861adb9ca"
 
 [workspace.dependencies.fsrs]
 version = "5.2.0"
-path = "../fsrs-rs"
+git = "https://github.com/YuuseiKurobane/fsrs-rs.git"
+rev = "26678889431f12f2341af692f451e85e6db0efe0"
 
 [workspace.dependencies]
 # local
@@ -127,7 +128,7 @@ syn = { version = "2.0.103", features = ["parsing", "printing"] }
 tar = "0.4.44"
 tempfile = "3.20.0"
 termcolor = "1.4.1"
-tokio = { version = "1.45", features = ["fs", "rt-multi-thread", "macros", "signal"] }
+tokio = { version = "1.45", features = ["fs", "rt-multi-thread", "macros", "signal", "io-util"] }
 tokio-util = { version = "0.7.15", features = ["io"] }
 tower-http = { version = "0.6.6", features = ["trace"] }
 tracing = { version = "0.1.41", features = ["max_level_trace", "release_max_level_debug"] }
