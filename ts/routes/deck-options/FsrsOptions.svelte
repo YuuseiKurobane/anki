@@ -22,6 +22,7 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
     import GlobalLabel from "./GlobalLabel.svelte";
     import { commitEditing, fsrsParams, type DeckOptionsState, ValueTab } from "./lib";
+    import SpinBoxRow from "./SpinBoxRow.svelte";
     import SpinBoxFloatRow from "./SpinBoxFloatRow.svelte";
     import Warning from "./Warning.svelte";
     import ParamsInputRow from "./ParamsInputRow.svelte";
@@ -120,6 +121,25 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
     const DESIRED_RETENTION_LOW_THRESHOLD = 0.8;
     const DESIRED_RETENTION_HIGH_THRESHOLD = 0.95;
+    const DEFAULT_OPTIMIZATION_EPOCHS = defaults.fsrsOptimizationEpochs ?? 5;
+    const MAX_OPTIMIZATION_EPOCHS = 4294967295;
+
+    let optimizationEpochsValue = DEFAULT_OPTIMIZATION_EPOCHS;
+    $: optimizationEpochsValue =
+        $config.fsrsOptimizationEpochs ?? DEFAULT_OPTIMIZATION_EPOCHS;
+    $: if ($config.fsrsOptimizationEpochs !== optimizationEpochsValue) {
+        $config.fsrsOptimizationEpochs = optimizationEpochsValue;
+    }
+
+    $: optimizationEpochsChangeInfo = getOptimizationEpochsChangeInfo(
+        optimizationEpochsValue,
+    );
+    $: optimizationEpochsWarning = getOptimizationEpochsWarning(
+        optimizationEpochsValue,
+    );
+    $: optimizationEpochsWarningClass = getOptimizationEpochsWarningClass(
+        optimizationEpochsValue,
+    );
 
     function getRetentionLongShortWarning(retention: number) {
         if (retention < DESIRED_RETENTION_LOW_THRESHOLD) {
@@ -128,6 +148,42 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
             return tr.deckConfigDesiredRetentionTooHigh();
         } else {
             return "";
+        }
+    }
+
+    function optimizationEpochsFactor(epochs: number): number {
+        return epochs / DEFAULT_OPTIMIZATION_EPOCHS;
+    }
+
+    function getOptimizationEpochsChangeInfo(epochs: number): string {
+        if (epochs === DEFAULT_OPTIMIZATION_EPOCHS) {
+            return "";
+        }
+
+        return tr.deckConfigOptimizationTimeFactorChange({
+            factor: optimizationEpochsFactor(epochs).toFixed(1),
+            epochs: DEFAULT_OPTIMIZATION_EPOCHS.toString(),
+        });
+    }
+
+    function getOptimizationEpochsWarning(epochs: number): string {
+        const factor = optimizationEpochsFactor(epochs);
+        if (factor === 0) {
+            return tr.deckConfigOptimizationEpochsZero();
+        } else if (factor > 10) {
+            return tr.deckConfigOptimizationEpochsTooHigh();
+        } else if (factor > 0 && factor < 1) {
+            return tr.deckConfigOptimizationEpochsBelowDefault();
+        } else {
+            return "";
+        }
+    }
+
+    function getOptimizationEpochsWarningClass(epochs: number): string {
+        if (optimizationEpochsFactor(epochs) > 100) {
+            return "alert-danger";
+        } else {
+            return "alert-warning";
         }
     }
 
@@ -195,6 +251,9 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
             alert(tr.deckConfigPleaseSaveYourChangesFirst());
             return;
         }
+        if (optimizationEpochsValue === 0) {
+            return;
+        }
         computingParams = true;
         computeParamsProgress = undefined;
         try {
@@ -219,6 +278,7 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
                         currentParams: params,
                         numOfRelearningSteps: numOfRelearningStepsInDay,
                         healthCheck: $healthCheck,
+                        optimizationEpochs: optimizationEpochsValue,
                     });
 
                     const alreadyOptimal =
@@ -385,6 +445,24 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
 <Warning warning={desiredRetentionChangeInfo} className={"alert-info two-line"} />
 <Warning warning={desiredRetentionWarning} className={retentionWarningClass} />
+
+<DynamicallySlottable slotHost={Item} api={{}}>
+    <Item>
+        <SpinBoxRow
+            bind:value={optimizationEpochsValue}
+            defaultValue={DEFAULT_OPTIMIZATION_EPOCHS}
+            min={0}
+            max={MAX_OPTIMIZATION_EPOCHS}
+        >
+            <SettingTitle on:click={() => openHelpModal("optimizationEpochs")}>
+                {tr.deckConfigOptimizationEpochs()}
+            </SettingTitle>
+        </SpinBoxRow>
+    </Item>
+</DynamicallySlottable>
+
+<Warning warning={optimizationEpochsChangeInfo} className={"alert-info two-line"} />
+<Warning warning={optimizationEpochsWarning} className={optimizationEpochsWarningClass} />
 
 <div class="ms-1 me-1">
     <ParamsInputRow

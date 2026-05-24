@@ -400,6 +400,7 @@ deck-config-ignore-before = Ignore cards reviewed before
 deck-config-time-to-optimize = It's been a while - using the Optimize All Presets button is recommended.
 deck-config-evaluate-button = Evaluate
 deck-config-desired-retention = Desired retention
+deck-config-optimization-epochs = Optimization epochs
 deck-config-historical-retention = Historical retention
 deck-config-smaller-is-better = Smaller numbers indicate a better fit to your review history.
 deck-config-steps-too-large-for-fsrs = When FSRS is enabled, steps of 1 day or more are not recommended.
@@ -423,6 +424,8 @@ deck-config-desired-retention-tooltip =
     a lot of material.
 deck-config-desired-retention-tooltip2 = 
     The workload values provided by the info box are a rough approximation. For a greater level of accuracy, use the simulator.
+deck-config-optimization-epochs-tooltip =
+    Controls how many training epochs FSRS uses when optimizing parameters. Higher values take longer and may provide only very small improvements.
 deck-config-historical-retention-tooltip =
     When some of your review history is missing, FSRS needs to fill in the gaps. By default, it will
     assume that when you did those old reviews, you remembered 90% of the material. If your old retention
@@ -468,9 +471,14 @@ deck-config-compute-optimal-weights-tooltip2 =
 deck-config-please-save-your-changes-first = Please save your changes first.
 deck-config-workload-factor-change = Approximate workload: {$factor}x
     (compared to {$previousDR}% desired retention)
+deck-config-optimization-time-factor-change = Approximate time: {$factor}x
+    (compared to {$epochs} epochs)
 deck-config-workload-factor-unchanged = The higher this value, the more frequently cards will be shown to you.
 deck-config-desired-retention-too-low = Your desired retention is very low, which can lead to very long intervals.
 deck-config-desired-retention-too-high = Your desired retention is very high, which can lead to very short intervals.
+deck-config-optimization-epochs-too-high = Your number of epochs is very high, which can leave your PC running very long without significant improvements.
+deck-config-optimization-epochs-below-default = Your number of epochs is lower than the default used by everyone else.
+deck-config-optimization-epochs-zero = The optimizer will do nothing because your number of epochs is 0.
 
 deck-config-percent-of-reviews =  
     { $reviews ->

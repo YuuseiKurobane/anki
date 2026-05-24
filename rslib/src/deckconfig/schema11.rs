@@ -98,10 +98,17 @@ pub struct DeckConfSchema11 {
     sm2_retention: f32,
     #[serde(default, rename = "weightSearch")]
     param_search: String,
+    #[serde(default)]
+    fsrs_optimization_epochs: Option<u32>,
 
     #[serde(flatten)]
     other: HashMap<String, Value>,
 }
+
+fn default_fsrs_optimization_epochs() -> u32 {
+    fsrs::DEFAULT_OPTIMIZATION_EPOCHS as u32
+}
+
 #[derive(Serialize_repr, Deserialize_repr, Debug, PartialEq, Eq, Clone)]
 #[repr(u8)]
 #[derive(Default)]
@@ -318,6 +325,7 @@ impl Default for DeckConfSchema11 {
             param_search: "".to_string(),
             ignore_revlogs_before_date: "".to_string(),
             easy_days_percentages: vec![1.0; 7],
+            fsrs_optimization_epochs: Some(default_fsrs_optimization_epochs()),
         }
     }
 }
@@ -400,6 +408,10 @@ impl From<DeckConfSchema11> for DeckConfig {
                 desired_retention: c.desired_retention,
                 historical_retention: c.sm2_retention,
                 param_search: c.param_search,
+                fsrs_optimization_epochs: Some(
+                    c.fsrs_optimization_epochs
+                        .unwrap_or_else(default_fsrs_optimization_epochs),
+                ),
                 other: other_bytes,
             },
         }
@@ -512,6 +524,7 @@ impl From<DeckConfig> for DeckConfSchema11 {
             desired_retention: i.desired_retention,
             sm2_retention: i.historical_retention,
             param_search: i.param_search,
+            fsrs_optimization_epochs: i.fsrs_optimization_epochs,
             ignore_revlogs_before_date: i.ignore_revlogs_before_date,
             easy_days_percentages: i.easy_days_percentages,
         }
@@ -547,6 +560,7 @@ static RESERVED_DECKCONF_KEYS: Set<&'static str> = phf_set! {
     "waitForAudio",
     "sm2Retention",
     "weightSearch",
+    "fsrsOptimizationEpochs",
     "ignoreRevlogsBeforeDate",
     "easyDaysPercentages",
 };

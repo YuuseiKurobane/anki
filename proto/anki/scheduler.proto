@@ -359,6 +359,7 @@ message ComputeFsrsParamsRequest {
   int64 ignore_revlogs_before_ms = 3;
   uint32 num_of_relearning_steps = 4;
   bool health_check = 5;
+  uint32 optimization_epochs = 6;
 }
 
 message ComputeFsrsParamsResponse {
