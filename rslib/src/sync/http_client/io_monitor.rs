@@ -188,6 +188,7 @@ mod test {
     use async_stream::stream;
     use futures::pin_mut;
     use futures::StreamExt;
+    use futures::TryStreamExt;
     use tokio::select;
     use tokio::time::sleep;
     use wiremock::matchers::method;
@@ -198,12 +199,23 @@ mod test {
 
     use super::*;
     use crate::sync::error::HttpError;
+    use crate::sync::request::header_and_stream::encode_zstd_body;
 
     /// The delays in the tests are aggressively short, and false positives slip
     /// through on a loaded system - especially on Windows. Fix by applying
     /// a universal multiplier.
     fn millis(millis: u64) -> Duration {
         Duration::from_millis(millis * if cfg!(windows) { 10 } else { 5 })
+    }
+
+    async fn compressed_body(data: Vec<u8>) -> Vec<u8> {
+        encode_zstd_body(data)
+            .try_fold(Vec::new(), |mut body, chunk| async move {
+                body.extend_from_slice(&chunk);
+                Ok(body)
+            })
+            .await
+            .unwrap()
     }
 
     #[tokio::test]
@@ -268,7 +280,11 @@ mod test {
         let mock_server = MockServer::start().await;
         Mock::given(method("POST"))
             .and(path("/"))
-            .respond_with(ResponseTemplate::new(200).insert_header(ORIGINAL_SIZE.as_str(), "0"))
+            .respond_with(
+                ResponseTemplate::new(200)
+                    .insert_header(ORIGINAL_SIZE.as_str(), "0")
+                    .set_body_bytes(compressed_body(vec![]).await),
+            )
             .mount(&mock_server)
             .await;
         let monitor = IoMonitor::new();
