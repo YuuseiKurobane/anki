@@ -22,6 +22,8 @@ pub use update::UpdateDeckConfigsRequest;
 /// Old deck config and cards table store 250% as 2500.
 pub(crate) const INITIAL_EASE_FACTOR_THOUSANDS: u16 = (INITIAL_EASE_FACTOR * 1000.0) as u16;
 
+use fsrs::DEFAULT_OPTIMIZATION_EPOCHS;
+
 use crate::define_newtype;
 use crate::prelude::*;
 use crate::scheduler::states::review::INITIAL_EASE_FACTOR;
@@ -83,6 +85,7 @@ const DEFAULT_DECK_CONFIG_INNER: DeckConfigInner = DeckConfigInner {
     param_search: String::new(),
     ignore_revlogs_before_date: String::new(),
     easy_days_percentages: Vec::new(),
+    fsrs_optimization_epochs: Some(DEFAULT_OPTIMIZATION_EPOCHS as u32),
 };
 
 impl Default for DeckConfig {
@@ -304,7 +307,15 @@ pub(crate) fn ensure_deck_config_values_valid(config: &mut DeckConfigInner) {
         default.historical_retention,
         0.7,
         0.97,
-    )
+    );
+    ensure_u32_valid(
+        config
+            .fsrs_optimization_epochs
+            .get_or_insert(default.fsrs_optimization_epochs.unwrap()),
+        default.fsrs_optimization_epochs.unwrap(),
+        0,
+        u32::MAX,
+    );
 }
 
 fn ensure_f32_valid(val: &mut f32, default: f32, min: f32, max: f32) {

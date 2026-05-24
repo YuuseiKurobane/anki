@@ -376,6 +376,13 @@ impl Collection {
             };
             let ignore_revlogs_before_ms = ignore_revlogs_before_ms_from_config(config)?;
             let num_of_relearning_steps = config.inner.relearn_steps.len();
+            let optimization_epochs = config
+                .inner
+                .fsrs_optimization_epochs
+                .unwrap_or(fsrs::DEFAULT_OPTIMIZATION_EPOCHS as u32);
+            if optimization_epochs == 0 {
+                continue;
+            }
             match self.compute_params(ComputeParamsRequest {
                 search: &search,
                 ignore_revlogs_before_ms,
@@ -384,6 +391,7 @@ impl Collection {
                 current_params: config.fsrs_params(),
                 num_of_relearning_steps,
                 health_check: false,
+                optimization_epochs: optimization_epochs as usize,
             }) {
                 Ok(params) => {
                     println!("{}: {:?}", config.name, params.params);

@@ -274,6 +274,7 @@ impl crate::services::SchedulerService for Collection {
             current_params: &input.current_params,
             num_of_relearning_steps: input.num_of_relearning_steps as usize,
             health_check: input.health_check,
+            optimization_epochs: input.optimization_epochs as usize,
         })
     }
 
@@ -396,6 +397,7 @@ impl crate::services::BackendSchedulerService for Backend {
             progress: None,
             enable_short_term: true,
             num_relearning_steps: None,
+            optimization_epochs: None,
         })?;
         Ok(ComputeFsrsParamsResponse {
             params,
@@ -419,6 +421,7 @@ impl crate::services::BackendSchedulerService for Backend {
             progress: None,
             enable_short_term: true,
             num_relearning_steps: None,
+            optimization_epochs: None,
         });
         Ok(FsrsBenchmarkResponse { params })
     }

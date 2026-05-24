@@ -45,6 +45,11 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
                 tr.deckConfigDesiredRetentionTooltip2(),
             sched: HelpItemScheduler.FSRS,
         },
+        optimizationEpochs: {
+            title: tr.deckConfigOptimizationEpochs(),
+            help: tr.deckConfigOptimizationEpochsTooltip(),
+            sched: HelpItemScheduler.FSRS,
+        },
         modelParams: {
             title: tr.deckConfigWeights(),
             help:

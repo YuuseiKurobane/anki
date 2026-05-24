@@ -59,6 +59,7 @@ pub struct ComputeParamsRequest<'t> {
     pub current_params: &'t Params,
     pub num_of_relearning_steps: usize,
     pub health_check: bool,
+    pub optimization_epochs: usize,
 }
 
 /// r: retention
@@ -89,9 +90,17 @@ impl Collection {
             current_params,
             num_of_relearning_steps,
             health_check,
+            optimization_epochs,
         } = request;
 
         self.clear_progress();
+        if optimization_epochs == 0 {
+            return Ok(ComputeFsrsParamsResponse {
+                params: current_params.to_vec(),
+                fsrs_items: 0,
+                health_check_passed: None,
+            });
+        }
         let timing = self.timing_today()?;
         let revlogs = self.revlog_for_srs(search)?;
         let (items, review_count) =
@@ -141,6 +150,7 @@ impl Collection {
             progress: Some(progress.clone()),
             enable_short_term: true,
             num_relearning_steps: Some(num_of_relearning_steps),
+            optimization_epochs: Some(optimization_epochs),
         };
         let mut params = fsrs.compute_parameters(input.clone())?;
         progress_thread.join().ok();
@@ -289,6 +299,7 @@ impl Collection {
             progress: None,
             enable_short_term: true,
             num_relearning_steps: Some(num_of_relearning_steps),
+            optimization_epochs: None,
         };
         Ok(fsrs.evaluate_with_time_series_splits(input, |ip| {
             anki_progress
